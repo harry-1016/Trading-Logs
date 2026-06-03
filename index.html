@@ -257,6 +257,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 .privacy-on .pf-val,.privacy-on .goal-vals{filter:blur(7px);user-select:none}
 
 .empty-state{text-align:center;padding:40px 20px;color:var(–muted);font-size:14px}
+.import-info{font-size:12px;color:var(–text2);line-height:1.5;margin-bottom:12px;padding:10px 12px;background:var(–surface2);border-radius:10px;border:1px solid var(–border)}
+.import-info strong{color:var(–cyan)}
+.import-csv-btn{background:rgba(0,229,255,.08);color:var(–cyan);border:1px solid rgba(0,229,255,.2)}
+.import-status{font-size:12px;font-weight:700;padding:8px 0;min-height:20px;text-align:center}
+.import-status.ok{color:var(–green)}.import-status.err{color:var(–red)}
 </style>
 
 </head>
@@ -274,40 +279,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
   <div class="spinner"></div>
 </div>
 
-<!-- ══════════ AUTH SCREEN ══════════ -->
-
-<div class="full-center" id="scr-auth" style="display:none">
-  <div class="logo-wrap" style="margin-bottom:24px">
-    <div class="logo-icon">📊</div>
-    <div class="logo-title">BetLog</div>
-    <div class="logo-sub">Sign in to sync your data across devices</div>
-  </div>
-  <div class="auth-card">
-    <div class="auth-tabs">
-      <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
-      <button class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</button>
-    </div>
-    <div class="auth-error" id="auth-error"></div>
-    <div class="auth-field">
-      <label class="auth-label">EMAIL</label>
-      <input class="auth-input" type="email" id="auth-email" placeholder="your@email.com" autocomplete="email"/>
-    </div>
-    <div class="auth-field">
-      <label class="auth-label">PASSWORD</label>
-      <input class="auth-input" type="password" id="auth-password" placeholder="••••••••" autocomplete="current-password"/>
-    </div>
-    <div class="auth-field" id="auth-name-field" style="display:none">
-      <label class="auth-label">YOUR NAME</label>
-      <input class="auth-input" type="text" id="auth-name" placeholder="e.g. Rahul"/>
-    </div>
-    <button class="auth-btn" id="auth-submit-btn" onclick="submitAuth()">Sign In</button>
-    <div class="auth-divider">or</div>
-    <button class="google-btn" onclick="signInGoogle()">
-      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-      Continue with Google
-    </button>
-  </div>
-</div>
+<!-- AUTH SCREEN REMOVED - App auto-starts with Firebase -->
 
 <!-- ══════════ MAIN APP ══════════ -->
 
@@ -453,6 +425,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
         <button class="period-pill" onclick="setAnaPeriod('month')">Month</button>
         <button class="period-pill" onclick="setAnaPeriod('year')">Year</button>
         <button class="period-pill" onclick="setAnaPeriod('custom')">📅 Custom</button>
+        <button class="period-pill" onclick="setAnaPeriod('alltime')">All Time</button>
       </div>
     </div>
     <div id="custom-range-label" style="display:none;padding:0 14px 8px;font-size:12px;color:var(--cyan);font-weight:700"></div>
@@ -519,10 +492,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 <div class="screen" id="scr-set">
   <div class="scroll-body">
     <div class="set-header"><h1>Settings</h1></div>
-    <!-- User chip -->
+    <!-- Sync status chip -->
     <div class="user-chip" id="user-chip">
-      <div class="user-avatar" id="user-avatar">?</div>
-      <div class="user-info"><div class="user-name" id="user-name-disp">Not signed in</div><div class="user-email" id="user-email-disp"></div></div>
+      <div class="user-avatar" id="user-avatar">📊</div>
+      <div class="user-info"><div class="user-name" id="user-name-disp">Trading Logs</div><div class="user-email" id="user-email-disp">Data synced to Firebase</div></div>
       <span class="sync-badge live" id="sync-badge">● Live</span>
     </div>
     <div class="set-section">
@@ -544,9 +517,19 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
       </button>
     </div>
     <div class="set-section">
+      <div class="set-section-title">Import Data</div>
+      <div class="import-info">Import trades from a CSV or Excel file. Columns needed: <strong>Date</strong> (YYYY-MM-DD), <strong>Type</strong> (profit/loss), <strong>Amount</strong>, and optionally <strong>Time</strong>, <strong>Note</strong>, <strong>Lesson</strong>.</div>
+      <button class="export-btn import-csv-btn" onclick="document.getElementById('import-file-input').click()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Import from CSV / Excel
+      </button>
+      <input type="file" id="import-file-input" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleImportFile(event)"/>
+      <div class="import-status" id="import-status"></div>
+    </div>
+    <div class="set-section">
       <div class="set-section-title">Account</div>
       <div class="set-row"><div><div class="set-row-label">Total Entries</div></div><div style="font-family:var(--mono);color:var(--muted)" id="set-entries">0</div></div>
-      <button class="danger-btn" onclick="signOut()" style="background:var(--surface2);color:var(--text2);border-color:var(--border);margin-bottom:8px">Sign Out</button>
+
       <button class="danger-btn" onclick="clearAll()">⚠ Clear All Data</button>
     </div>
     <div style="height:20px"></div>
@@ -644,7 +627,7 @@ const FIREBASE_CONFIG = {
 const FIREBASE_READY = !FIREBASE_CONFIG.apiKey.includes('PASTE');
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut as fbSignOut, updateProfile } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getAuth, onAuthStateChanged, signInAnonymously, signOut as fbSignOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, doc, collection, onSnapshot, setDoc, deleteDoc, getDocs, getDoc, writeBatch } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 let app, auth, db, unsubEntries, unsubPrefs, currentUser = null;
@@ -662,18 +645,19 @@ if (FIREBASE_READY) {
       window._currentUser = user;
       startApp(user);
     } else {
-      currentUser = null;
-      window._firebaseReady = false;
-      showAuthScreen();
+      // No login required — sign in anonymously so data still syncs to Firestore
+      signInAnonymously(auth).catch(() => {
+        // Fallback to local mode if anonymous auth fails
+        window._firebaseReady = false;
+        window._localMode = true;
+        document.getElementById('scr-loading').style.display = 'none';
+        window.dispatchEvent(new CustomEvent('appReady', { detail: { mode: 'local' } }));
+      });
     }
   });
 
-  // Expose auth functions to global scope
+  // Expose auth functions (sign out just reloads to stay anonymous)
   window._fbSignOut = () => fbSignOut(auth);
-  window._fbSignUp  = (email, pass, name) => createUserWithEmailAndPassword(auth, email, pass)
-    .then(cred => updateProfile(cred.user, { displayName: name }));
-  window._fbSignIn  = (email, pass) => signInWithEmailAndPassword(auth, email, pass);
-  window._fbGoogle  = () => signInWithPopup(auth, new GoogleAuthProvider());
 
 } else {
   // No Firebase config → run in local-only mode
@@ -691,7 +675,6 @@ if (FIREBASE_READY) {
 // ─────────────────────────────────────────────
 function startApp(user) {
   document.getElementById('scr-loading').style.display = 'none';
-  document.getElementById('scr-auth').style.display = 'none';
   window.dispatchEvent(new CustomEvent('appReady', { detail: { mode: 'firebase', user } }));
   subscribeToData(user.uid);
 }
@@ -741,10 +724,7 @@ window._clearAllData = async (uid) => {
   await batch.commit();
 };
 
-function showAuthScreen() {
-  document.getElementById('scr-loading').style.display = 'none';
-  document.getElementById('scr-auth').style.display    = 'flex';
-}
+// Auth screen removed - app auto-starts
 </script>
 
 <script>
@@ -1205,7 +1185,7 @@ function setAnaPeriod(period){
     return;
   }
   S.anaPeriod=period;
-  document.querySelectorAll('.period-pill').forEach(b=>{ const m=b.getAttribute('onclick').match(/setAnaPeriod\('(\w+)'\)/); b.classList.toggle('active',m&&m[1]===period); });
+  document.querySelectorAll('.period-pill').forEach(b=>{ const m=b.getAttribute('onclick').match(/setAnaPeriod\('([\w]+)'\)/); b.classList.toggle('active',m&&m[1]===period); });
   document.getElementById('custom-range-label').style.display='none';
   renderAnalytics();
 }
@@ -1226,6 +1206,7 @@ function getAnaStats(){
     case 'month': return getMonthStats(now.getFullYear(),now.getMonth());
     case 'year': return getYearStats(now.getFullYear());
     case 'custom': return getDateRangeStats(S.customFrom||today,S.customTo||today);
+    case 'alltime': return getAllStats();
     default: return getMonthStats(now.getFullYear(),now.getMonth());
   }
 }
@@ -1318,6 +1299,115 @@ async function clearAll(){
   S.entries={};
   if(S.mode==='firebase'&&S.uid&&window._clearAllData){ try{ await window._clearAllData(S.uid); }catch(e){} }
   lsSave(); renderCalendar(); renderSettings();
+}
+
+// ══════════════════════════════════════════
+// IMPORT
+// ══════════════════════════════════════════
+function setImportStatus(msg, type) {
+  const el = document.getElementById('import-status');
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'import-status ' + (type || '');
+}
+
+async function handleImportFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  event.target.value = ''; // reset so same file can be re-selected
+  const ext = file.name.split('.').pop().toLowerCase();
+  setImportStatus('Reading file…', '');
+
+  try {
+    if (ext === 'csv') {
+      const text = await file.text();
+      await importFromCSV(text);
+    } else if (ext === 'xlsx' || ext === 'xls') {
+      await importFromExcel(file);
+    } else {
+      setImportStatus('Unsupported file type. Use CSV or Excel (.xlsx/.xls).', 'err');
+    }
+  } catch(e) {
+    setImportStatus('Import failed: ' + e.message, 'err');
+  }
+}
+
+function parseImportRows(rows) {
+  // rows: array of objects with keys (case-insensitive)
+  let imported = 0, skipped = 0;
+  rows.forEach(row => {
+    // Normalize keys
+    const keys = {};
+    Object.keys(row).forEach(k => { keys[k.toLowerCase().trim()] = row[k]; });
+    const date = (keys['date'] || '').toString().trim();
+    const type = (keys['type'] || '').toString().trim().toLowerCase();
+    const amount = parseFloat(keys['amount'] || keys['p&l'] || keys['pnl'] || 0);
+    const time = (keys['time'] || '').toString().trim();
+    const note = (keys['note'] || '').toString().trim();
+    const lesson = (keys['lesson'] || '').toString().trim();
+
+    // Validate
+    if (!date.match(/^\d{4}-\d{2}-\d{2}$/) || !['profit','loss'].includes(type) || isNaN(amount) || amount <= 0) {
+      skipped++;
+      return;
+    }
+    if (!S.entries[date]) S.entries[date] = [];
+    S.entries[date].push({ id: genId(), type, amount, time: time || '', note, lesson, img: null });
+    imported++;
+  });
+  return { imported, skipped };
+}
+
+async function importFromCSV(text) {
+  const lines = text.trim().split(/
+?
+/);
+  if (lines.length < 2) { setImportStatus('CSV is empty or has no data rows.', 'err'); return; }
+  const headers = lines[0].split(',').map(h => h.replace(/^"|"$/g,'').trim());
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    const vals = lines[i].split(',').map(v => v.replace(/^"|"$/g,'').trim());
+    if (vals.length < 3) continue;
+    const obj = {};
+    headers.forEach((h, idx) => { obj[h] = vals[idx] || ''; });
+    rows.push(obj);
+  }
+  const { imported, skipped } = parseImportRows(rows);
+  await finishImport(imported, skipped);
+}
+
+async function importFromExcel(file) {
+  // Load SheetJS dynamically
+  if (!window.XLSX) {
+    await new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+      s.onload = resolve; s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+  const buf = await file.arrayBuffer();
+  const wb = window.XLSX.read(buf, { type: 'array' });
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  const rows = window.XLSX.utils.sheet_to_json(ws, { defval: '' });
+  const { imported, skipped } = parseImportRows(rows);
+  await finishImport(imported, skipped);
+}
+
+async function finishImport(imported, skipped) {
+  if (imported === 0) {
+    setImportStatus(`No valid rows found. ${skipped} rows skipped. Check Date (YYYY-MM-DD), Type (profit/loss), Amount.`, 'err');
+    return;
+  }
+  // Save all modified days
+  const dks = Object.keys(S.entries);
+  for (const dk of dks) {
+    await saveDay(dk);
+  }
+  renderCalendar();
+  renderSettings();
+  const msg = `✓ Imported ${imported} trade${imported>1?'s':''}` + (skipped > 0 ? ` (${skipped} skipped)` : '');
+  setImportStatus(msg, 'ok');
 }
 
 // ══════════════════════════════════════════
